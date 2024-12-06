@@ -6,13 +6,13 @@ const userAuth = async (req, res, next) => {
     if (!token) {
       return req.status(401).json({ message: "Please Login again!" });
     }
-    const decodedObject = await JWT.verify(token, "SECRET@JWT@123");
+    const decodedObject = JWT.verify(token, "SECRET@JWT@123");
     const _id = decodedObject?._id;
     const user = await User.findById(_id);
     if (!user) {
       return req.status(404).send("User not found");
     }
-
+    console.log(`${user.firstName} made this request..........!`);
     req.user = user;
     next();
   } catch (error) {

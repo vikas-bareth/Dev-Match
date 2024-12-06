@@ -1,44 +1,55 @@
 require("dotenv").config();
+const bcrypt = require("bcrypt");
 const PORT = process.env.PORT || 3000;
 const fs = require("fs");
 console.log("Does .env exist?", fs.existsSync(".env"));
-
-// console.log("process.env:", process.env)
 const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
+const { validateSignUpData } = require("./utils/validation");
+const { userAuth } = require("./middlewares/auth");
+const cookieParser = require("cookie-parser");
 
 //Middleware
 app.use(express.json());
+app.use(cookieParser());
 
 //Signup
 app.post("/signup", async (req, res) => {
-  const { firstName, lastName, emailId, password } = req.body;
-
-  if (!firstName || !lastName || !emailId || !password) {
-    return res.status(400).send("Missing Required Fields!");
-  }
-
-  const userObj = {
-    firstName,
-    lastName,
-    emailId,
-    password,
-  };
+  const { firstName, lastName, emailId, password, age, gender } = req.body;
   try {
+    validateSignUpData(req);
+    //hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+    //create db object
+    const userObj = {
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash,
+      age,
+      gender,
+    };
+    //save user
     const user = new User(userObj);
-    await user.save();
-    console.log("success");
-    return res.send("Data saved");
+    const savedUser = await user.save();
+    //generate and return jwt token
+    const token = await savedUser.getJWT();
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 8 * 3600000),
+    });
+    return res
+      .status(200)
+      .json({ message: "User Added successfully!", data: savedUser });
   } catch (error) {
     console.error(error);
-    return res.status(500).send(`Server Error...${error?.message}`);
+    return res.status(400).json({ error: error?.message });
   }
 });
 
 //find user by email
-app.get("/user", async (req, res) => {
+app.get("/user", userAuth, async (req, res) => {
   const email = req.body.email;
   if (!email) {
     return res.status(400).send("Missing Required field");
@@ -48,7 +59,6 @@ app.get("/user", async (req, res) => {
     if (user.length === 0) {
       return res.status(404).send(`${email} not found`);
     }
-    console.log("user:", user);
     return res.json({ success: true, data: user });
   } catch (error) {
     return res.status(500).json({ success: false, error: error });

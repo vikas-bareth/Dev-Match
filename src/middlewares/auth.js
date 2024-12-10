@@ -4,13 +4,13 @@ const userAuth = async (req, res, next) => {
   try {
     const token = req.cookies.token;
     if (!token) {
-      return req.status(401).json({ message: "Please Login again!" });
+      return res.status(401).json({ message: "Please Login!" });
     }
     const decodedObject = JWT.verify(token, "SECRET@JWT@123");
     const _id = decodedObject?._id;
     const user = await User.findById(_id);
     if (!user) {
-      return req.status(404).send("User not found");
+      return res.status(404).send("User not found");
     }
     console.log(`${user.firstName} made this request..........!`);
     req.user = user;

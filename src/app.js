@@ -4,6 +4,7 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const cookieParser = require("cookie-parser");
+const errorHandler = require("./middlewares/errorHandler");
 
 //Middleware
 app.use(express.json());
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
 app.use("/request", requestRouter);
+app.use(errorHandler);
 
 connectDB().then(() => {
   console.log("Database connection successfull.....");

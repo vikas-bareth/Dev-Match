@@ -1,0 +1,86 @@
+const userService = require("../services/user.service");
+const ApiError = require("../utils/ApiError");
+const logger = require("../utils/logger");
+
+exports.getUserByEmail = async (req, res, next) => {
+  try {
+    const email = req.body.email;
+    if (!email) {
+      throw new ApiError(400, "Missing required fields");
+    }
+    const user = await userService.findUserByEmail(email);
+    if (user.length === 0 || !user) {
+      throw new ApiError(404, `${email} not found`);
+    }
+    return res.json({ success: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    const users = await userService.findAllUser();
+    console.log("users+_______", users);
+
+    // if (!users.success) {
+    //   throw new ApiError(400, "Failed to get all users!");
+    // }
+    return res.status(200).json({
+      success: users.success,
+      data: users.data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getUserById = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    if (!userId) {
+      throw new ApiError(400, "Missing required field!");
+    }
+    const user = await userService.findUserById(userId);
+    return res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.delteUserById = async (req, res, next) => {
+  try {
+    const userId = req.body.user_id;
+    if (!userId) {
+      throw new ApiError(400, "Missing required field!");
+    }
+    const user = await userService.deleteUserById(userId);
+    if (!user.success) {
+      throw new ApiError(400, user.message);
+    }
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully!",
+      data: user.data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateUserById = async (req, res, next) => {
+  try {
+    const userId = req.body.user_id;
+    const data = req.body;
+    if (!userId || !data) {
+      throw new ApiError(400, "Missing required data!");
+    }
+    const result = await userService.updateUser(userId, data);
+    return res.status(200).json({
+      success: result.success,
+      data: result.data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

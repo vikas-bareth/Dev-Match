@@ -23,7 +23,7 @@ app.use(
 );
 
 const authRouter = require("./src/routes/auth.route");
-const profileRouter = require("./src/routes/profile.route");
+const userRouter = require("./src/routes/user.route");
 const requestRouter = require("./src/routes/request.route");
 const logger = require("./src/utils/logger");
 
@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRouter);
-app.use("/profile", profileRouter);
+app.use("/user", userRouter);
 app.use("/request", requestRouter);
 app.use(errorHandler);
 

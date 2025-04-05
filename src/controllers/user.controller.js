@@ -21,11 +21,10 @@ exports.getUserByEmail = async (req, res, next) => {
 exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await userService.findAllUser();
-    console.log("users+_______", users);
 
-    // if (!users.success) {
-    //   throw new ApiError(400, "Failed to get all users!");
-    // }
+    if (!users.success) {
+      throw new ApiError(400, "Failed to get all users!");
+    }
     return res.status(200).json({
       success: users.success,
       data: users.data,

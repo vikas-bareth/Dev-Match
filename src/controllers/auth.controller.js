@@ -1,6 +1,7 @@
 const { validateSignUpData } = require("../utils/validation");
 const User = require("../models/user");
 const ApiError = require("../utils/ApiError");
+const bcrypt = require("bcrypt");
 
 exports.Signup = async (req, res, next) => {
   try {

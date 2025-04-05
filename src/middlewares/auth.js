@@ -1,22 +1,32 @@
 const JWT = require("jsonwebtoken");
 const User = require("../models/user");
+const logger = require("../utils/logger");
+
 const userAuth = async (req, res, next) => {
   try {
     const token = req.cookies.token;
+
     if (!token) {
-      return res.status(401).json({ message: "Please Login!" });
+      logger.warn("Unauthorized access attempt. No token provided.");
+      return res.status(401).json({ message: "Please login to continue." });
     }
-    const decodedObject = JWT.verify(token, "SECRET@JWT@123");
-    const _id = decodedObject?._id;
-    const user = await User.findById(_id);
+
+    const decoded = JWT.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(decoded?._id);
     if (!user) {
-      return res.status(404).send("User not found");
+      logger.warn("Token valid but user not found.");
+      return res.status(404).json({ message: "User not found." });
     }
-    console.log(`${user.firstName} made this request..........!`);
+
+    logger.info(
+      `🔐 Authenticated request by: ${user.firstName} ${user.lastName}`
+    );
     req.user = user;
-    next();
+    return next();
   } catch (error) {
-    return res.status(400).json({ error: error?.message });
+    logger.error("❌ Auth error: ", error.message);
+    return res.status(401).json({ error: "Invalid or expired token." });
   }
 };
 

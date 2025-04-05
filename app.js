@@ -2,6 +2,7 @@ const dotenv = require("dotenv");
 const NODE_ENV = process.env.NODE_ENV || "development";
 dotenv.config({ path: `.env.${NODE_ENV}` });
 const PORT = process.env.PORT;
+const APP_URL = process.env.APP_URL;
 const express = require("express");
 const connectDB = require("./src/config/database");
 const morgan = require("morgan");
@@ -48,6 +49,6 @@ connectDB().then(() => {
       });
     });
     logger.info(`🚀 Server listening on port ${PORT}`);
-    logger.info(`🌐 Visit: http://localhost:${PORT}`);
+    logger.info(`🌐 Visit:${APP_URL}`);
   });
 });

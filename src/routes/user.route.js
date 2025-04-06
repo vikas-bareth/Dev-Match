@@ -14,5 +14,6 @@ router.delete("/", userAuth, userController.deleteUserById);
 router.get("/all", userAuth, userController.getAllUsers);
 
 router.get("/requests", userAuth, userController.getUserConnectionRequests);
+router.get("/connections", userAuth, userController.getUserConnections);
 
 module.exports = router;

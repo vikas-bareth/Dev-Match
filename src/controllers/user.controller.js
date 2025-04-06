@@ -97,3 +97,23 @@ exports.getUserConnectionRequests = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getUserConnections = async (req, res, next) => {
+  try {
+    const loggedInUserId = req.user._id;
+    const status = "ACCEPTED";
+    const connectionRequests = await userService.getUserConnections(
+      loggedInUserId,
+      status
+    );
+    const data = connectionRequests.data.map((connection) => {
+      if (connection.fromUserId._id.toString() === loggedInUserId.toString()) {
+        return connection.toUserId;
+      }
+      return connection.fromUserId;
+    });
+    return res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};

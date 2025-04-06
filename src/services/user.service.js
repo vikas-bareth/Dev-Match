@@ -68,3 +68,31 @@ exports.getUserAllConnectionRequests = async (userId, status) => {
     throw error;
   }
 };
+
+exports.getUserConnections = async (userId, status) => {
+  try {
+    const userConnections = await ConnectionRequest.find({
+      $or: [
+        { toUserId: userId, status },
+        { fromUserId: userId, status },
+      ],
+    })
+      .populate("fromUserId", [
+        "firstName",
+        "lastName",
+        "age",
+        "gender",
+        "skills",
+      ])
+      .populate("toUserId", [
+        "firstName",
+        "lastName",
+        "age",
+        "gender",
+        "skills",
+      ]);
+    return { success: true, data: userConnections };
+  } catch (error) {
+    next(error);
+  }
+};

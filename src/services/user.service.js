@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const ConnectionRequest = require("../models/connectionRequest");
 
 exports.findAllUser = async () => {
   try {
@@ -45,6 +46,24 @@ exports.updateUser = async (userId, data) => {
       returnDocument: "after",
     });
     return { success: true, data: user };
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getUserAllConnectionRequests = async (userId, status) => {
+  try {
+    const userConnectionRequests = await ConnectionRequest.find({
+      toUserId: userId,
+      status: status,
+    }).populate("fromUserId", [
+      "firstName",
+      "lastName",
+      "age",
+      "gender",
+      "skills",
+    ]);
+    return { success: true, userConnectionRequests };
   } catch (error) {
     throw error;
   }

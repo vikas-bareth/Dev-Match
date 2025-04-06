@@ -47,7 +47,7 @@ exports.getUserById = async (req, res, next) => {
   }
 };
 
-exports.delteUserById = async (req, res, next) => {
+exports.deleteUserById = async (req, res, next) => {
   try {
     const userId = req.body.user_id;
     if (!userId) {
@@ -79,6 +79,20 @@ exports.updateUserById = async (req, res, next) => {
       success: result.success,
       data: result.data,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getUserConnectionRequests = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const status = req.query.status || "INTERESTED";
+    const userAllConnectionRequests =
+      await userService.getUserAllConnectionRequests(userId, status);
+    return res
+      .status(200)
+      .json({ success: true, requests: userAllConnectionRequests });
   } catch (error) {
     next(error);
   }

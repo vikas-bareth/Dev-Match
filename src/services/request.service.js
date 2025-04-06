@@ -33,7 +33,7 @@ exports.checkExistingConnectionRequest = async (fromUserId, toUserId) => {
 
 exports.validateRequestUserId = async (fromUserId, toUserId) => {
   try {
-    if (fromUserId === toUserId) {
+    if (fromUserId.equals(toUserId)) {
       return { success: false, message: "Cannot send request to same user!" };
     }
     if (!isValidObjectId(fromUserId) || !isValidObjectId(toUserId)) {
@@ -50,5 +50,19 @@ exports.validateRequestUserId = async (fromUserId, toUserId) => {
     return { success: true };
   } catch (error) {
     return { success: false, message: error.message };
+  }
+};
+
+exports.saveConnectionRequest = async (fromUserId, toUserId, status) => {
+  try {
+    const connectionRequest = new ConnectionRequest({
+      fromUserId,
+      toUserId,
+      status,
+    });
+    const newConnection = await connectionRequest.save();
+    return newConnection;
+  } catch (error) {
+    throw error;
   }
 };

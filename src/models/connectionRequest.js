@@ -14,7 +14,7 @@ const connectionRequestSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: {
-        values: ["ignore", "interested", "accepted", "rejected"],
+        values: ["IGNORE", "INTERESTED", "ACCEPTED", "REJECTED"],
         message: `{VALUE} is incorrect status type!`,
       },
     },
@@ -23,15 +23,6 @@ const connectionRequestSchema = new mongoose.Schema(
 );
 
 connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
-
-connectionRequestSchema.pre("save", function () {
-  const connectionRequest = this;
-  console.log(
-    "BEFORE SAVING FUNCTION LOGG HERE ----------------------->",
-    connectionRequest
-  );
-  next();
-});
 
 const ConnectionRequest = mongoose.model(
   "ConnectionRequest",

@@ -32,12 +32,41 @@ exports.sendRequest = async (req, res, next) => {
       toUserId,
       status
     );
-    return res
-      .status(200)
-      .json({
-        success: true,
-        data: statusMessages[status] || "Action completed.",
-      });
+    return res.status(200).json({
+      success: true,
+      data: statusMessages[status] || "Action completed.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.reviewConnectionRequest = async (req, res, next) => {
+  try {
+    const ALLOWED_STATUS = ["ACCEPTED", "REJECTED"];
+    const { status, requestId } = req.params;
+    const loggedInUserId = req.user._id;
+    if (!ALLOWED_STATUS.includes(status))
+      throw new ApiError(400, `Invalid Status: ${status}`);
+    const connectionRequest =
+      await requestService.connectionRequestFindAndUpdate(
+        requestId,
+        loggedInUserId,
+        status
+      );
+    if (!connectionRequest.success) {
+      switch (connectionRequest.type) {
+        case "NOT_FOUND":
+          throw new ApiError(404, connectionRequest.message);
+        default:
+          throw new ApiError(400, connectionRequest.message);
+      }
+    }
+    return res.status(200).json({
+      success: true,
+      message: `${connectionRequest.message}, status: ${status}`,
+      data: connectionRequest.data,
+    });
   } catch (error) {
     next(error);
   }

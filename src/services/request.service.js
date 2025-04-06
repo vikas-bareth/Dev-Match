@@ -66,3 +66,38 @@ exports.saveConnectionRequest = async (fromUserId, toUserId, status) => {
     throw error;
   }
 };
+
+exports.connectionRequestFindAndUpdate = async (
+  requestId,
+  loggedInUserId,
+  status
+) => {
+  try {
+    if (!isValidObjectId(requestId) || !isValidObjectId(loggedInUserId)) {
+      return {
+        success: false,
+        type: "INVALID_DATA",
+        message: "Invalid Id!",
+      };
+    }
+    const connectionRequest = await ConnectionRequest.findOne({
+      _id: requestId,
+      toUserId: loggedInUserId,
+      status: "INTERESTED",
+    });
+    if (!connectionRequest) {
+      return {
+        success: false,
+        type: "NOT_FOUND",
+        message: "No request found",
+      };
+    }
+    connectionRequest.status = status;
+    await connectionRequest.save();
+    return {
+      success: true,
+      message: "connection request updated!",
+      data: connectionRequest,
+    };
+  } catch (error) {}
+};

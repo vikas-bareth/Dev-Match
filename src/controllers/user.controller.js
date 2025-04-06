@@ -117,3 +117,30 @@ exports.getUserConnections = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getUserFeed = async (req, res, next) => {
+  try {
+    const loggedInUser = req.user._id;
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    limit = limit > 50 ? 50 : limit;
+    const connectionRequests = await userService.getUserConnectionAll(
+      loggedInUser
+    );
+    const hideUsersFromFeed = new Set();
+    connectionRequests.forEach((connection) => {
+      hideUsersFromFeed.add(connection.fromUserId.toString());
+      hideUsersFromFeed.add(connection.toUserId.toString());
+    });
+    const usersFeed = await userService.getFeedUsers(
+      hideUsersFromFeed,
+      loggedInUser,
+      page,
+      limit
+    );
+
+    return res.status(200).json({ success: true, data: usersFeed });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -96,3 +96,44 @@ exports.getUserConnections = async (userId, status) => {
     next(error);
   }
 };
+
+exports.getUserConnectionAll = async (userId) => {
+  try {
+    return await ConnectionRequest.find({
+      $or: [{ fromUserId: userId }, { toUserId: userId }],
+    }).select("fromUserId toUserId");
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getFeedUsers = async (
+  hideUsersFromFeed,
+  loggedInUserId,
+  page,
+  limit
+) => {
+  try {
+    let skip = (page - 1) * limit;
+    const users = await User.find({
+      $and: [
+        { _id: { $nin: Array.from(hideUsersFromFeed) } },
+        { _id: { $ne: loggedInUserId } },
+      ],
+    })
+      .select([
+        "firstName",
+        "lastName",
+        "age",
+        "gender",
+        "skills",
+        "photoUrl",
+        "about",
+      ])
+      .skip(skip)
+      .limit(limit);
+    return users;
+  } catch (error) {
+    throw error;
+  }
+};

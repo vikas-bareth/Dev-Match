@@ -15,5 +15,6 @@ router.get("/all", userAuth, userController.getAllUsers);
 
 router.get("/requests", userAuth, userController.getUserConnectionRequests);
 router.get("/connections", userAuth, userController.getUserConnections);
+router.get("/feed", userAuth, userController.getUserFeed);
 
 module.exports = router;

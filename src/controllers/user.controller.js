@@ -75,10 +75,7 @@ exports.updateUserById = async (req, res, next) => {
       throw new ApiError(400, "Missing required data!");
     }
     const result = await userService.updateUser(userId, data);
-    return res.status(200).json({
-      success: result.success,
-      data: result.data,
-    });
+    return res.status(200).json(result.data);
   } catch (error) {
     next(error);
   }
@@ -88,11 +85,11 @@ exports.getUserConnectionRequests = async (req, res, next) => {
   try {
     const userId = req.user._id;
     const status = req.query.status || "INTERESTED";
-    const userAllConnectionRequests =
-      await userService.getUserAllConnectionRequests(userId, status);
-    return res
-      .status(200)
-      .json({ success: true, requests: userAllConnectionRequests });
+    const result = await userService.getUserAllConnectionRequests(
+      userId,
+      status
+    );
+    return res.status(200).json(result.userConnectionRequests);
   } catch (error) {
     next(error);
   }
@@ -112,7 +109,7 @@ exports.getUserConnections = async (req, res, next) => {
       }
       return connection.fromUserId;
     });
-    return res.status(200).json({ success: true, data });
+    return res.status(200).json(data);
   } catch (error) {
     next(error);
   }
@@ -139,7 +136,7 @@ exports.getUserFeed = async (req, res, next) => {
       limit
     );
 
-    return res.status(200).json({ success: true, data: usersFeed });
+    return res.status(200).json(usersFeed);
   } catch (error) {
     next(error);
   }

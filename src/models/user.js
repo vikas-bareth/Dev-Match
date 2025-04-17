@@ -45,10 +45,14 @@ const userSchema = new Schema(
     photoUrl: {
       type: String,
       default: "https://geographyandyou.com/images/user-profile.png",
-      match: [
-        /^(https?:\/\/.*\.(?:png|jpg|jpeg|svg|webp))$/,
-        "Photo URL must be a valid image URL",
-      ],
+      validate: {
+        validator: function (url) {
+          // Accept URLs starting with http/https and optionally ending with image extensions
+          const regex = /^(https?:\/\/.*(\.(?:png|jpg|jpeg|svg|webp))?)$/;
+          return regex.test(url);
+        },
+        message: "Photo URL must be a valid image URL",
+      },
     },
     about: {
       type: String,

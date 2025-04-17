@@ -70,3 +70,40 @@ exports.getUser = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.logout = async (req, res, next) => {
+  try {
+    res.cookie("token", null, new Date(Date.now()));
+    return res.status(200).json({ message: "Logout successfully!" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateUser = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const { user } = req.body;
+
+    if (!user) {
+      return res.status(400).json({ message: "No update fields provided" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, user, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      message: "User updated successfully!",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    next(error);
+  }
+};

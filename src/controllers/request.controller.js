@@ -32,10 +32,7 @@ exports.sendRequest = async (req, res, next) => {
       toUserId,
       status
     );
-    return res.status(200).json({
-      success: true,
-      data: statusMessages[status] || "Action completed.",
-    });
+    return res.status(200).json(statusMessages[status] || "Action completed.");
   } catch (error) {
     next(error);
   }

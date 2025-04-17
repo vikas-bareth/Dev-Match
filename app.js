@@ -10,8 +10,15 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const errorHandler = require("./src/middlewares/errorHandler");
 const listEndpoints = require("express-list-endpoints");
+const cors = require("cors");
 
 //Middleware
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -39,7 +46,7 @@ app.use("/request", requestRouter);
 app.use(errorHandler);
 
 connectDB().then(() => {
-  console.log("Database connection successfull.....");
+  console.log("Database connection successfully.....");
   app.listen(PORT, () => {
     const endpoints = listEndpoints(app);
     logger.info("📚 Available API Routes:");

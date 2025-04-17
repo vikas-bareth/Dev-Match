@@ -13,4 +13,8 @@ router.post("/login", authController.login);
 
 router.get("/user", userAuth, authController.getUser);
 
+router.patch("/user", userAuth, authController.updateUser);
+
+router.get("/logout", authController.logout);
+
 module.exports = router;

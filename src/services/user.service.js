@@ -62,6 +62,7 @@ exports.getUserAllConnectionRequests = async (userId, status) => {
       "age",
       "gender",
       "skills",
+      "photoUrl",
     ]);
     return { success: true, userConnectionRequests };
   } catch (error) {
@@ -83,6 +84,7 @@ exports.getUserConnections = async (userId, status) => {
         "age",
         "gender",
         "skills",
+        "photoUrl",
       ])
       .populate("toUserId", [
         "firstName",
@@ -90,6 +92,7 @@ exports.getUserConnections = async (userId, status) => {
         "age",
         "gender",
         "skills",
+        "photoUrl",
       ]);
     return { success: true, data: userConnections };
   } catch (error) {

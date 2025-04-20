@@ -1,7 +1,7 @@
 const dotenv = require("dotenv");
 const NODE_ENV = process.env.NODE_ENV || "development";
 dotenv.config({ path: `.env.${NODE_ENV}` });
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 7777;
 const APP_URL = process.env.APP_URL;
 const express = require("express");
 const connectDB = require("./src/config/database");

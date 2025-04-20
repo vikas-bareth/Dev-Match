@@ -40,9 +40,9 @@ app.get("/", (req, res) => {
     .json({ message: "Welcome to dev-match backend application!" });
 });
 
-app.use("/auth", authRouter);
-app.use("/user", userRouter);
-app.use("/request", requestRouter);
+app.use("auth", authRouter);
+app.use("user", userRouter);
+app.use("request", requestRouter);
 app.use(errorHandler);
 
 connectDB().then(() => {
